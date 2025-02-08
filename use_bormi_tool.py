@@ -1,9 +1,8 @@
 import shutil
 import os
-import json
 import sys
 import tkinter as tk
-from tkinter import messagebox, simpledialog
+from tkinter import messagebox, filedialog
 from pathlib import Path
 
 def get_firefox_profiles_path():
@@ -59,20 +58,25 @@ def main():
     
     profiles = list_profiles()
     
-    if len(profiles) < 2:
-        messagebox.showerror("Error", "Not enough profiles found for migration.")
+    if len(profiles) == 0:
+        messagebox.showwarning("Warning", "No profiles found in the default location.")
+        # make below as def ask_directoryes_profile
+        old_profile_path = filedialog.askdirectory(title="Select OLD Firefox profile folder")
+        if not old_profile_path:
+            return
+        old_profile = Path(old_profile_path)
+        
+        new_profile_path = filedialog.askdirectory(title="Select NEW Firefox profile folder")
+    if not new_profile_path:
         return
-    
-    choices = [p.name for p in profiles]
-    old_profile_name = simpledialog.askstring("Profile Selection", "Enter the name of the OLD profile:", initialvalue=choices[0])
-    if old_profile_name not in choices:
-        return
-    old_profile = next(p for p in profiles if p.name == old_profile_name)
-    
-    new_profile_name = simpledialog.askstring("Profile Selection", "Enter the name of the NEW profile:", initialvalue=choices[1])
-    if new_profile_name not in choices:
-        return
-    new_profile = next(p for p in profiles if p.name == new_profile_name)
+    new_profile = Path(new_profile_path)
+    elif len(profiles) == 1:
+        pass # ask how used exsist profali - as new or as old
+    elif len(profiles) >= 2:
+        pass # two dropdown for New and for Old with booth folder names and go button
+    else:
+        pass # Warning: too many profile
+   
     
     copy_profile(old_profile, new_profile)
     messagebox.showinfo("Success", "Migration completed successfully!")
