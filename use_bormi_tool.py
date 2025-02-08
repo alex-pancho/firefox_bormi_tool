@@ -2,7 +2,8 @@ import shutil
 import os
 import json
 import sys
-import wx
+import tkinter as tk
+from tkinter import messagebox, simpledialog
 from pathlib import Path
 
 def get_firefox_profiles_path():
@@ -53,32 +54,28 @@ def copy_profile(old_profile, new_profile):
             print(f"Skipping missing: {item}")
 
 def main():
-    app = wx.App(False)
-    frame = wx.Frame(None, wx.ID_ANY, "Firefox Profile Migrator", size=(400, 300))
-    panel = wx.Panel(frame)
+    root = tk.Tk()
+    root.withdraw()
     
     profiles = list_profiles()
     
     if len(profiles) < 2:
-        wx.MessageBox("Error: Not enough profiles found for migration.", "Error", wx.OK | wx.ICON_ERROR)
+        messagebox.showerror("Error", "Not enough profiles found for migration.")
         return
     
     choices = [p.name for p in profiles]
-    old_profile_choice = wx.SingleChoiceDialog(frame, "Select the OLD profile:", "Profile Selection", choices)
-    if old_profile_choice.ShowModal() != wx.ID_OK:
+    old_profile_name = simpledialog.askstring("Profile Selection", "Enter the name of the OLD profile:", initialvalue=choices[0])
+    if old_profile_name not in choices:
         return
-    old_profile = profiles[old_profile_choice.GetSelection()]
+    old_profile = next(p for p in profiles if p.name == old_profile_name)
     
-    new_profile_choice = wx.SingleChoiceDialog(frame, "Select the NEW profile:", "Profile Selection", choices)
-    if new_profile_choice.ShowModal() != wx.ID_OK:
+    new_profile_name = simpledialog.askstring("Profile Selection", "Enter the name of the NEW profile:", initialvalue=choices[1])
+    if new_profile_name not in choices:
         return
-    new_profile = profiles[new_profile_choice.GetSelection()]
+    new_profile = next(p for p in profiles if p.name == new_profile_name)
     
     copy_profile(old_profile, new_profile)
-    wx.MessageBox("Migration completed successfully!", "Success", wx.OK | wx.ICON_INFORMATION)
-    
-    frame.Show()
-    app.MainLoop()
+    messagebox.showinfo("Success", "Migration completed successfully!")
 
 if __name__ == "__main__":
     main()
