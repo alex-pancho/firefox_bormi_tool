@@ -16,8 +16,8 @@ This script allows users to easily back up or migrate their Mozilla Firefox prof
 - Ensures data integrity during migration
 
 ## Requirements
-- Python 3.x
-- wxPython
+- Python 3.x ONLY
+- Exsist at least two Mozilla Firefox profiles - new and old
 
 ## Usage
 Run the script and follow the GUI prompts to back up or migrate your Firefox profile.
