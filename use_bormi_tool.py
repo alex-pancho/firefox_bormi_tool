@@ -15,7 +15,7 @@ def get_firefox_profiles_path():
         return Path.home() / ".mozilla" / "firefox"
 
 
-def check_profile_ini(firefox_profiles_path:Path):
+def check_profile_ini(firefox_profiles_path: Path):
     profiles_ini_path = firefox_profiles_path.parent / "profiles.ini"
     if not profiles_ini_path.exists():
         print(
@@ -30,7 +30,7 @@ def check_profile_ini(firefox_profiles_path:Path):
 def list_profiles():
     profiles_dir = get_firefox_profiles_path()
     check_profile_ini(profiles_dir)
-    profiles = [p for p in profiles_dir.iterdir() if p.is_dir()]        
+    profiles = [p for p in profiles_dir.iterdir() if p.is_dir()]
     return profiles
 
 
