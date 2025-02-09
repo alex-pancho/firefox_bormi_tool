@@ -1,9 +1,9 @@
 # Mozilla Firefox BORMI tool
 
-Python script for [B]ackup [OR] [MI]grate from old to new Mozilla Firefox profile.
+Python script for **B**ackup **OR** **MI**grate from old to new Mozilla Firefox profile.
 
 ## Description
-This script allows users to easily back up or migrate their Mozilla Firefox profiles using a graphical user interface (GUI) built with wxPython.
+This script allows users to easily back up or migrate their Mozilla Firefox profiles using a graphical user interface (GUI) built with TkInter.
 
 ## Based on
 - [Profiles - Where Firefox stores user data](https://support.mozilla.org/en-US/kb/profiles-where-firefox-stores-user-data)
@@ -16,7 +16,7 @@ This script allows users to easily back up or migrate their Mozilla Firefox prof
 - Ensures data integrity during migration
 
 ## Requirements
-- Python 3.x ONLY
+- ONLY Python 3.x  (no pypy library dependencies)
 - Exsist at least two Mozilla Firefox profiles - new and old
 
 ## Usage
@@ -26,4 +26,4 @@ Run the script and follow the GUI prompts to back up or migrate your Firefox pro
 python use_bormi_tool.py
 ```
 
-
+Next, you will be given the opportunity to specify theFirefox profiles for backup or migrate.

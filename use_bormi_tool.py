@@ -1,9 +1,9 @@
 import shutil
 import os
 import sys
-import tkinter as tk
-from tkinter import messagebox, filedialog, ttk
 from pathlib import Path
+import argparse
+from gui_bormi_tool import gui_mode
 
 
 def get_firefox_profiles_path():
@@ -43,7 +43,7 @@ def copy_profile(old_profile, new_profile):
         "prefs.js",  # Preferences
         "extensions",  # Installed extensions
         "storage",  # Site data
-        "sessionstore.jsonlz4"  # Open tabs and session
+        "sessionstore.jsonlz4",  # Open tabs and session
     ]
 
     for item in files_to_copy:
@@ -59,107 +59,59 @@ def copy_profile(old_profile, new_profile):
             print(f"Skipping missing: {item}")
 
 
-def ask_directories_profile(is_old_known: bool = False, is_new_known: bool = False):
-    old_profile = None
-    new_profile = None
-
-    if not is_old_known:
-        old_profile_path = filedialog.askdirectory(
-            title="Select OLD Firefox profile folder"
-        )
-        if not old_profile_path:
-            return None, None
-        old_profile = Path(old_profile_path)
-    if not is_new_known:
-        new_profile_path = filedialog.askdirectory(
-            title="Select NEW Firefox profile folder"
-        )
-        if not new_profile_path:
-            return None, None
-        new_profile = Path(new_profile_path)
-
-    return old_profile, new_profile
-
-
-def select_profiles_gui(profiles):
-    def on_submit():
-        nonlocal old_dropdown, new_dropdown
-        old_profile = profiles_dict[old_dropdown.get()]
-        new_profile = profiles_dict[new_dropdown.get()]
-        old_profile_label.config(text=old_profile)
-        new_profile_label.config(text=new_profile)
-        root.quit()
-
-    root = tk.Tk()
-    root.title("Select Firefox Profiles")
-
-    profiles_dict = {p.name: p for p in profiles}
-    # Label to display the returned value
-    old_profile_label = tk.Label(root, 
-                                 text="""
-    """)
-    old_profile_label.pack()
-
-    tk.Label(root, text="Select OLD Profile:").pack()
-    old_profile_var = tk.StringVar()
-    old_dropdown = ttk.Combobox(
-        root,
-        textvariable=old_profile_var,
-        values=list(profiles_dict.keys())
-    )
-    old_dropdown.pack()
-
-    tk.Label(root, text="Select NEW Profile:").pack()
-    new_profile_var = tk.StringVar()
-    new_dropdown = ttk.Combobox(
-        root,
-        textvariable=new_profile_var,
-        values=list(profiles_dict.keys())
-    )
-    new_dropdown.pack()
-    
-    # Label to display the returned value
-    new_profile_label = tk.Label(root, 
-                                 text="""
-    """)
-    new_profile_label.pack()
-
-    tk.Button(root, text="Start Migration", command=on_submit).pack()
-    root.mainloop()
-
-    return old_profile_label.cget("text"), new_profile_label.cget("text")
-
-
-def main():
-    root = tk.Tk()
-    root.withdraw()
-
+def text_mode():
     profiles = list_profiles()
     old_profile, new_profile = None, None
 
     if len(profiles) == 0:
-        messagebox.showwarning(
-            "Warning", "No profiles found in the default location."
-        )
-        old_profile, new_profile = ask_directories_profile()
+        print("No profiles found in the default location.")
+        old_profile_path = input("Enter the path to the OLD profile: ")
+        new_profile_path = input("Enter the path to the NEW profile: ")
+        old_profile = Path(old_profile_path)
+        new_profile = Path(new_profile_path)
     elif len(profiles) == 1:
-        response = messagebox.askquestion(
-            "Single Profile Found", "Can I use this profile as OLD?"
-        )
-        if response == "yes":
+        response = input("Single Profile Found. Use this profile as OLD? (yes/no): ")
+        if response.lower() == "yes":
             old_profile = profiles[0]
-            new_profile, _ = ask_directories_profile(is_old_known=True)
+            new_profile_path = input("Enter the path to the NEW profile: ")
+            new_profile = Path(new_profile_path)
         else:
             new_profile = profiles[0]
-            old_profile, _ = ask_directories_profile(is_new_known=True)
+            old_profile_path = input("Enter the path to the OLD profile: ")
+            old_profile = Path(old_profile_path)
     elif len(profiles) >= 2:
-        old_profile, new_profile = select_profiles_gui(profiles)
+        print("Available profiles:")
+        for i, profile in enumerate(profiles):
+            print(f"{i + 1}. {profile}")
+        old_profile_index = int(input("Select the OLD profile (number): ")) - 1
+        new_profile_index = int(input("Select the NEW profile (number): ")) - 1
+        old_profile = profiles[old_profile_index]
+        new_profile = profiles[new_profile_index]
     else:
         raise TypeError("Impossible get len of 'profiles' value")
 
     if old_profile and new_profile:
         copy_profile(old_profile, new_profile)
-        messagebox.showinfo("Success", "Migration completed successfully!")
+        print("Migration completed successfully!")
+
+
+def main():
+    parser = argparse.ArgumentParser(
+        description="Firefox Profile Backup or Migrate Tool"
+    )
+    parser.add_argument(
+        "--mode",
+        "-m",
+        choices=["gui", "text"],
+        default="text",
+        help="Run mode: 'gui' or 'text'",
+    )
+    args = parser.parse_args()
+
+    if args.mode == "gui":
+        gui_mode(list_profiles, copy_profile)
+    else:
+        text_mode()
 
 
 if __name__ == "__main__":
