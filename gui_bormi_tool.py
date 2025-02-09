@@ -66,11 +66,11 @@ def select_profiles_gui(profiles):
     return old_profile_label.cget("text"), new_profile_label.cget("text")
 
 
-def gui_mode(func_ist_profiles, func_copy_profile):
+def gui_mode(func_list_profiles, func_copy_profile):
     root = tk.Tk()
     root.withdraw()
 
-    profiles = func_ist_profiles()
+    profiles = func_list_profiles()
     old_profile, new_profile = None, None
 
     if len(profiles) == 0:

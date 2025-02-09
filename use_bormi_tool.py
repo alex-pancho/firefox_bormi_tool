@@ -15,19 +15,22 @@ def get_firefox_profiles_path():
         return Path.home() / ".mozilla" / "firefox"
 
 
-def get_profiles_ini():
-    profiles_ini_path = get_firefox_profiles_path().parent / "profiles.ini"
+def check_profile_ini(firefox_profiles_path:Path):
+    profiles_ini_path = firefox_profiles_path.parent / "profiles.ini"
     if not profiles_ini_path.exists():
         print(
-            "Error: profiles.ini not found. Firefox profile directory may be incorrect."
+            f"""Error: profiles.ini not found in
+    {profiles_ini_path}
+    Firefox profile directory may be incorrect."""
         )
-        sys.exit(1)
-    return profiles_ini_path
+        return False
+    return True
 
 
 def list_profiles():
     profiles_dir = get_firefox_profiles_path()
-    profiles = [p for p in profiles_dir.iterdir() if p.is_dir()]
+    check_profile_ini(profiles_dir)
+    profiles = [p for p in profiles_dir.iterdir() if p.is_dir()]        
     return profiles
 
 
@@ -70,7 +73,7 @@ def text_mode():
         old_profile = Path(old_profile_path)
         new_profile = Path(new_profile_path)
     elif len(profiles) == 1:
-        response = input("Single Profile Found. Use this profile as OLD? (yes/no): ")
+        response = input("Single Profile Found. Use this profile as OLD? (yes/NO): ")
         if response.lower() == "yes":
             old_profile = profiles[0]
             new_profile_path = input("Enter the path to the NEW profile: ")
