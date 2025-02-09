@@ -20,10 +20,16 @@ This script allows users to easily back up or migrate their Mozilla Firefox prof
 - Exsist at least two Mozilla Firefox profiles - new and old
 
 ## Usage
-Run the script and follow the GUI prompts to back up or migrate your Firefox profile.
+Run the script and follow the prompts to back up or migrate your Firefox profile.
 
+### Text Mode (default)
 ```bash
 python use_bormi_tool.py
 ```
 
-Next, you will be given the opportunity to specify theFirefox profiles for backup or migrate.
+### GUI Mode 
+```bash
+python use_bormi_tool.py -m gui
+```
+
+Next, you will be given the opportunity to specify the Firefox profiles for backup or migrate.
